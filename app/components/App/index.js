@@ -5,8 +5,8 @@
  */
 
 import React, { Component } from "react";
-import { View } from "react-native"
-import { Heading } from "@shoutem/ui"
+import { View } from "react-native";
+import { Heading } from "@shoutem/ui";
 
 type Props = {};
 

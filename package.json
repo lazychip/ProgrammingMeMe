@@ -4,7 +4,11 @@
   "private": true,
   "scripts": {
     "start": "node node_modules/react-native/local-cli/cli.js start",
-    "test": "jest"
+    "test": "jest",
+    "flow start": "flow start",
+    "flow stop": "flow stop",
+    "flow status": "flow status",
+    "flow coverage": "flow coverage"
   },
   "dependencies": {
     "@shoutem/ui": "^0.23.4",
@@ -13,9 +17,11 @@
     "unstated": "^2.1.1"
   },
   "devDependencies": {
+    "babel-eslint": "^8.2.5",
     "babel-jest": "23.2.0",
     "babel-preset-react-native": "4.0.0",
     "jest": "23.3.0",
+    "prettier-eslint": "^8.8.2",
     "react-test-renderer": "16.3.1"
   },
   "jest": {
