@@ -12,6 +12,8 @@
   },
   "dependencies": {
     "@shoutem/ui": "^0.23.4",
+    "axios": "^0.18.0",
+    "flow": "^0.2.3",
     "react": "16.3.1",
     "react-native": "0.55.4",
     "unstated": "^2.1.1"
