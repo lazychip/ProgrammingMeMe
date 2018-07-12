@@ -4,28 +4,33 @@ class RedditHelper {
   async getPosts(options: PostOptions) {
     const { onlyHasThumbnails = true, subreddits } = options;
     let allPosts = (await Promise.all(
-      subreddits.map(async subreddit => {
+      Object.keys(subreddits).map(async subreddit => {
         const res = await axios.get(
-          `https://www.reddit.com/r/${subreddit}.json`
+          `https://www.reddit.com/r/${subreddit}.json?after=${subreddit !== "random" ? subreddits[subreddit] : ""}`,
         );
-        return res.data.data.children.map(d => d.data);
+        return {
+          data: res.data.data.children.map(d => d.data),
+          cursor: res.data.data.after,
+          subreddit,
+        }
       })
     ));
     let posts = []
+    let cursors = {}
     allPosts.forEach(p => {
-      posts = [...posts, ...p]
+      posts = [...posts, ...p.data]
+      cursors[p.subreddit] = p.cursor
     })
     if (onlyHasThumbnails) {
-      posts = posts.filter(post => post.thumbnail && checkURL(post.thumbnail));
+      posts = posts.filter(post => post.preview);
     }
-    console.log(posts.length)
-    return posts;
+    return {posts, cursors};
   }
 }
 
 type PostOptions = {
   onlyHasThumbnails: boolean,
-  subreddits: Array
+  subreddits: Object
 };
 
 export const redditHelper = new RedditHelper();

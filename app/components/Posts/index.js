@@ -1,40 +1,46 @@
 import React from "react";
 import { PostsContainer, postsContainer } from "../../containers";
 import { redditHelper } from "../../helpers";
-import { TouchableOpacity, ListView } from "@shoutem/ui";
+import { TouchableOpacity, ListView, Button, View } from "@shoutem/ui";
 import { Subscribe } from "unstated";
-import { Dimensions, Image, RefreshControl } from "react-native";
+import { Dimensions, Image, RefreshControl, Text } from "react-native";
 
 const window = Dimensions.get("window");
 
 class Posts extends React.Component {
   componentWillMount() {
-    this.setState({refreshing: true})
-    this.fetchPosts()
+    this.onRefresh()
   }
   constructor (props, context) {
     super(props, context)
     this.state = {
       refreshing: false
     }
-    this.onRefresh = this.onRefresh.bind(this)
-    this.fetchPosts = this.fetchPosts.bind(this)
   }
-  async onRefresh () {
-    console.log("refresh")
-    this.setState({refreshing: true})
-    await this.fetchPosts()
+  onRefresh = () => {
+    let cursors = {}
+    Object.keys(this.props.cursors).map(c => {
+      if (this.props.cursors[c] !== false) {
+        cursors[c] = undefined
+      }
+    })
+    this.fetchPosts(cursors, {isRefresh: true})
   }
-
-  async fetchPosts () {
+  fetchPosts = async (subreddits, options) => {
     try {
-      const posts = await redditHelper.getPosts({
-        subreddits: ["random", "MrRobot", "comics", "programmerHumor"]
-      });
-      postsContainer.updatePosts({ posts })
+      this.setState({refreshing: true})
+      console.log("fetching")
+      const posts = await redditHelper.getPosts({subreddits});
+      postsContainer.updatePosts({...options, ...posts})
+      console.log("fetched")
       this.setState({refreshing: false})
     } catch (error) {
+      console.error(error)
     }
+  }
+  onLoadMore = () => {
+    console.log("load more")
+    this.fetchPosts(this.props.cursors)
   }
 
   renderRow(post) {
@@ -56,7 +62,7 @@ class Posts extends React.Component {
     }
 
     return (
-      <TouchableOpacity key={post.id} style={{ backgroundColor: "#fff" }}>
+      <TouchableOpacity key={post.id}>
         <Image
           style={{ flex: 1, width: window.width, height: window.width * resolution.height / resolution.width, marginBottom: 20 }}
           // styleName="large-portrait"
@@ -67,19 +73,24 @@ class Posts extends React.Component {
   }
   render() {
     const {refreshing} = this.state
+    const { posts } = this.props
     return (
-      <Subscribe to={[PostsContainer]}>
-        {posts => {
-          return (
-            <ListView
-              loading={refreshing}
-              onRefresh={this.onRefresh}
-              style={{ backgroundColor: "#f0f0f0" }}
-              data={posts.state.posts}
-              renderRow={this.renderRow} />
-          );
-        }}
-      </Subscribe>
+      <View styleName="vertical">
+        <View styleName="h-center">
+          <Button styleName="secondary">
+            <Text>Click me</Text>
+          </Button>
+          <Button styleName="secondary">
+            <Text>Click me</Text>
+          </Button>
+        </View>
+        <ListView
+          loading={refreshing}
+          onLoadMore={this.onLoadMore}
+          onRefresh={this.onRefresh}
+          data={posts}
+          renderRow={this.renderRow} />
+      </View>
     );
   }
 }

@@ -9,17 +9,22 @@ import { View } from "react-native";
 import { Heading } from "@shoutem/ui";
 import { redditHelper } from "../../helpers";
 import { Provider } from "unstated";
-import { postsContainer } from "../../containers";
+import { PostsContainer, postsContainer } from "../../containers";
 import {} from "unstated";
 import Posts from "../Posts";
+import { Subscribe } from "unstated";
 type Props = {};
 
 export default class App extends Component<Props> {
   render() {
     return (
       <Provider inject={[postsContainer]}>
-        <View style={{ backgroundColor: "#f0f0f0" }}>
-          <Posts />
+        <View>
+            <Subscribe to={[PostsContainer]}>
+                {
+                    posts => <Posts cursors={posts.state.cursors} posts={posts.state.posts} />
+                }
+            </Subscribe>
         </View>
       </Provider>
     );
