@@ -18,7 +18,7 @@ export default class App extends Component<Props> {
   render() {
     return (
       <Provider inject={[postsContainer]}>
-        <View>
+        <View style={{ backgroundColor: "#f0f0f0" }}>
           <Posts />
         </View>
       </Provider>
